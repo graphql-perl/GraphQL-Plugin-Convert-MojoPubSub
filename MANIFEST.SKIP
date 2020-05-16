@@ -1,0 +1,13 @@
+MANIFEST.SKIP
+^cover_db\/
+MANIFEST.bak
+.git\/
+^.gitignore
+^.travis.yml
+blib\/
+MYMETA\..*
+^GraphQL-Plugin-Convert-MojoPubSub-\d.*
+^Makefile$
+^Makefile.bak$
+pm_to_blib
+\.swp$

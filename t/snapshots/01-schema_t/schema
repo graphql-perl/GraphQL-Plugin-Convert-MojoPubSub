@@ -1,0 +1,25 @@
+'type Mutation {
+  publish(input: [PubSubMessageInput!]!): DateTime!
+}
+
+type PubSubMessage {
+  channel: String!
+  dateTime: DateTime!
+  message: String!
+  username: String!
+}
+
+input PubSubMessageInput {
+  channel: String!
+  message: String!
+  username: String!
+}
+
+type Query {
+  status: Boolean!
+}
+
+type Subscription {
+  subscribe(channels: [String!]): PubSubMessage!
+}
+'

@@ -1,0 +1,10 @@
+Changes
+lib/GraphQL/Plugin/Convert/MojoPubSub.pm
+Makefile.PL
+MANIFEST			This list of files
+README.md
+t/00-report-prereqs.t
+t/01-schema.t
+t/snapshots/01-schema_t/schema
+xt/manifest.t
+xt/pod.t

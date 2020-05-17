@@ -19,7 +19,7 @@ sub field_resolver {
   my ($root_value, $args, $context, $info) = @_;
   my $field_name = $info->{field_name};
   my $parent_type = $info->{parent_type}->to_string;
-  DEBUG and _debug('MojoPubSub.resolver', $root_value, $field_name, $parent_type, $args);
+  DEBUG and _debug('MojoPubSub.resolver', $field_name, $parent_type, $args);
   my $property = ref($root_value) eq 'HASH'
     ? $root_value->{$field_name}
     : $root_value;
@@ -52,7 +52,7 @@ sub subscribe_resolver {
   @channels = (FIREHOSE) if !@channels;
   my $ai = GraphQL::AsyncIterator->new(promise_code => $info->{promise_code});
   my $field_name = $info->{field_name};
-  DEBUG and _debug('MojoPubSub.s_r', $root_value, $args, \@channels);
+  DEBUG and _debug('MojoPubSub.s_r', $args, \@channels);
   my $cb;
   my @subscriptions;
   $cb = sub {

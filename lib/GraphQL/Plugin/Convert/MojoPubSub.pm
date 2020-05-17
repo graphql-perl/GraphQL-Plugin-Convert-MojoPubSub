@@ -28,6 +28,19 @@ sub field_resolver {
       # semi-fake "status" because can't have empty query
       return 1;
     }
+    die "Unknown field '$field_name'\n"
+      unless $parent_type eq 'Mutation' and $field_name eq 'publish';
+    my $now = DateTime->now;
+    my @input = @{ $args->{input} || [] };
+    DEBUG and _debug('MojoPubSub.resolver(input)', @input);
+    for my $msg (@input) {
+      # regrettably blocking, until both have a notify_p
+      $root_value->json($msg->{channel})->notify(
+        $msg->{channel},
+        { dateTime => $now, %$msg },
+      );
+    }
+    $now;
   };
   die $@ if $@;
   $result;

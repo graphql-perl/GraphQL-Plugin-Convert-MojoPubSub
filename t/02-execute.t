@@ -32,4 +32,21 @@ subtest 'status' => sub {
     ;
 };
 
+my @messages = (
+  { channel => "testing", message => "yo", username => "bob" },
+  { channel => "other", message => "hi", username => "bill" },
+);
+subtest 'publish' => sub {
+  $t->post_ok('/graphql', json => {
+    query => <<'EOF',
+mutation m($messages: [PubSubMessageInput!]!) {
+  publish(input: $messages)
+}
+EOF
+    variables => { messages => \@messages },
+  })->json_like('/data/publish' => qr/\d/)
+    ->or(sub { diag explain $t->tx->res->body })
+    ;
+};
+
 done_testing;

@@ -43,7 +43,7 @@ to pass in programmatically-created scalars or enums.
     [GraphQL::Type::InputObject](https://metacpan.org/pod/GraphQL::Type::InputObject) and [GraphQL::Type::Object](https://metacpan.org/pod/GraphQL::Type::Object) which are
     the input and output of the mutation and subscription respectively.
 
-- an object compatible with [Mojo::Redis::PubSub](https://metacpan.org/pod/Mojo::Redis::PubSub).
+- an object compatible with [Mojo::Redis](https://metacpan.org/pod/Mojo::Redis), with a `pubsub` attribute.
 
 Note the output type will have a `dateTime` field added to it with type
 non-null `DateTime`. Both input and output types will have a non-null

@@ -38,7 +38,7 @@ sub field_resolver {
     for my $msg (@input) {
       # regrettably blocking, until both have a notify_p
       $msg = { dateTime => $now, %$msg };
-      $root_value->json($_)->notify($_, $msg) for $msg->{channel}, FIREHOSE;
+      $root_value->pubsub->json($_)->notify($_, $msg) for $msg->{channel}, FIREHOSE;
     }
     $now;
   };
@@ -61,9 +61,9 @@ sub subscribe_resolver {
     eval { $ai->publish({ $field_name => $msg }) };
     DEBUG and _debug('MojoPubSub.cb2', $@);
     return if !$@;
-    $root_value->unlisten(@$_) for @subscriptions;
+    $root_value->pubsub->unlisten(@$_) for @subscriptions;
   };
-  @subscriptions = map [ $_, $root_value->listen($_ => $cb) ], @channels;
+  @subscriptions = map [ $_, $root_value->pubsub->listen($_ => $cb) ], @channels;
   $ai;
 }
 
@@ -172,7 +172,7 @@ the input and output of the mutation and subscription respectively.
 
 =item *
 
-an object compatible with L<Mojo::Redis::PubSub>.
+an object compatible with L<Mojo::Redis>, with a C<pubsub> attribute.
 
 =back
 

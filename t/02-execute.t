@@ -18,7 +18,7 @@ plugin GraphQL => {
       username => $String->non_null,
       message => $String->non_null,
     },
-    $redis->pubsub,
+    $redis,
   ],
 };
 my $t = Test::Mojo->new;

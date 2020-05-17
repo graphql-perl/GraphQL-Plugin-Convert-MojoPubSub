@@ -86,7 +86,8 @@ The schema will look like:
     }
 
 The `subscribe` field takes a list of channels to subscribe to. If the
-list is null, all channels will be subscribed to - a "firehose".
+list is null or empty, all channels will be subscribed to - a "firehose",
+implemented as an actual channel named `_firehose`.
 
 # DEBUGGING
 

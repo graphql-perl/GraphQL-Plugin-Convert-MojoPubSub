@@ -32,6 +32,50 @@ subtest 'status' => sub {
     ;
 };
 
+my $wsp = Mojolicious::Plugin::GraphQL->ws_protocol;
+my $query_sub = <<'EOF';
+subscription s($channels: [String!]) {
+  subscribe(channels: $channels) {
+    channel
+    message
+    username
+  }
+}
+EOF
+my $init = { payload => {}, type => $wsp->{GQL_CONNECTION_INIT} };
+my $ack = { payload => {}, type => $wsp->{GQL_CONNECTION_ACK} };
+my $t_sub1 = Test::Mojo->new;
+subtest 'subscribe1' => sub {
+  my $start1 = {
+    payload => {
+      query => $query_sub,
+      variables => { channels => ['testing'] },
+    },
+    type => $wsp->{GQL_START},
+    id => 1,
+  };
+  $t_sub1->websocket_ok('/graphql')
+    ->send_ok({json => $init})
+    ->message_ok->json_message_is($ack)
+    ->or(sub { diag explain $t->message })
+    ->send_ok({json => $start1});
+};
+my $t_sub2 = Test::Mojo->new;
+subtest 'subscribe2' => sub {
+  my $start2 = {
+    payload => {
+      query => $query_sub,
+#      variables => { channels => ['testing'] },
+    },
+    type => $wsp->{GQL_START},
+    id => 2,
+  };
+  $t_sub2->websocket_ok('/graphql')
+    ->send_ok({json => $init})
+    ->message_ok->json_message_is($ack)
+    ->or(sub { diag explain $t->message })
+    ->send_ok({json => $start2});
+};
 my @messages = (
   { channel => "testing", message => "yo", username => "bob" },
   { channel => "other", message => "hi", username => "bill" },
@@ -46,6 +90,33 @@ EOF
     variables => { messages => \@messages },
   })->json_like('/data/publish' => qr/\d/)
     ->or(sub { diag explain $t->tx->res->body })
+    ;
+};
+subtest 'notification1' => sub {
+  my $data1 = {
+    payload => { data => { subscribe => $messages[0] } },
+    type => $wsp->{GQL_DATA},
+    id => 1,
+  };
+  $t_sub1->message_ok->json_message_is($data1)
+    ->or(sub { diag explain $t->message })
+    ;
+};
+subtest 'notification2' => sub {
+  my $data21 = {
+    payload => { data => { subscribe => $messages[0] } },
+    type => $wsp->{GQL_DATA},
+    id => 2,
+  };
+  my $data22 = {
+    payload => { data => { subscribe => $messages[1] } },
+    type => $wsp->{GQL_DATA},
+    id => 2,
+  };
+  $t_sub2->message_ok->json_message_is($data21)
+    ->or(sub { diag explain $t->message })
+    ->message_ok->json_message_is($data22)
+    ->or(sub { diag explain $t->message })
     ;
 };
 

@@ -7,9 +7,11 @@ use DateTime;
 use GraphQL::Type::Scalar qw($Boolean $String);
 use GraphQL::Type::Object;
 use GraphQL::Type::InputObject;
+use GraphQL::AsyncIterator;
 
 our $VERSION = "0.01";
 use constant DEBUG => $ENV{GRAPHQL_DEBUG};
+use constant FIREHOSE => '_firehose';
 
 my ($DateTime) = grep $_->name eq 'DateTime', GraphQL::Plugin::Type->registered;
 
@@ -35,15 +37,34 @@ sub field_resolver {
     DEBUG and _debug('MojoPubSub.resolver(input)', @input);
     for my $msg (@input) {
       # regrettably blocking, until both have a notify_p
-      $root_value->json($msg->{channel})->notify(
-        $msg->{channel},
-        { dateTime => $now, %$msg },
-      );
+      $msg = { dateTime => $now, %$msg };
+      $root_value->json($_)->notify($_, $msg) for $msg->{channel}, FIREHOSE;
     }
     $now;
   };
   die $@ if $@;
   $result;
+}
+
+sub subscribe_resolver {
+  my ($root_value, $args, $context, $info) = @_;
+  my @channels = @{ $args->{channels} || [] };
+  @channels = (FIREHOSE) if !@channels;
+  my $ai = GraphQL::AsyncIterator->new(promise_code => $info->{promise_code});
+  my $field_name = $info->{field_name};
+  DEBUG and _debug('MojoPubSub.s_r', $root_value, $args, \@channels);
+  my $cb;
+  my @subscriptions;
+  $cb = sub {
+    my ($pubsub, $msg) = @_;
+    DEBUG and _debug('MojoPubSub.cb', $msg, \@channels);
+    eval { $ai->publish({ $field_name => $msg }) };
+    DEBUG and _debug('MojoPubSub.cb2', $@);
+    return if !$@;
+    $root_value->unlisten(@$_) for @subscriptions;
+  };
+  @subscriptions = map [ $_, $root_value->listen($_ => $cb) ], @channels;
+  $ai;
 }
 
 sub to_graphql {
@@ -90,6 +111,7 @@ sub to_graphql {
     schema => $schema,
     root_value => $pubsub,
     resolver => \&field_resolver,
+    subscribe_resolver => \&subscribe_resolver,
   };
 }
 
@@ -195,7 +217,8 @@ The schema will look like:
   }
 
 The C<subscribe> field takes a list of channels to subscribe to. If the
-list is null, all channels will be subscribed to - a "firehose".
+list is null or empty, all channels will be subscribed to - a "firehose",
+implemented as an actual channel named C<_firehose>.
 
 =head1 DEBUGGING
 

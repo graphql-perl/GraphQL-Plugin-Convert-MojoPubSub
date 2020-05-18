@@ -42,8 +42,8 @@ subscription s($channels: [String!]) {
   }
 }
 EOF
-my $init = { payload => {}, type => $wsp->{GQL_CONNECTION_INIT} };
-my $ack = { payload => {}, type => $wsp->{GQL_CONNECTION_ACK} };
+my $init = { type => $wsp->{GQL_CONNECTION_INIT} };
+my $ack = { type => $wsp->{GQL_CONNECTION_ACK} };
 my $t_sub1 = Test::Mojo->new;
 subtest 'subscribe1' => sub {
   my $start1 = {

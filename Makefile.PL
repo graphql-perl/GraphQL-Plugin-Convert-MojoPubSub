@@ -15,7 +15,7 @@ WriteMakefile(
   },
   TEST_REQUIRES => {
     'Test::More' => '0.98',
-    'Mojolicious::Plugin::GraphQL' => '0.15', # subscriptions
+    'Mojolicious::Plugin::GraphQL' => '0.16', # keepalive
     'Test::Snapshot' => '0.02', # better snapshot filenames
   },
   PREREQ_PM => {

@@ -19,10 +19,10 @@ sub field_resolver {
   my ($root_value, $args, $context, $info) = @_;
   my $field_name = $info->{field_name};
   my $parent_type = $info->{parent_type}->to_string;
-  DEBUG and _debug('MojoPubSub.resolver', $field_name, $parent_type, $args);
   my $property = ref($root_value) eq 'HASH'
     ? $root_value->{$field_name}
     : $root_value;
+  DEBUG and _debug('MojoPubSub.resolver', $field_name, $parent_type, $args, $property, ref($root_value) eq 'HASH' ? $root_value : ());
   my $result = eval {
     return $property->($args, $context, $info) if ref $property eq 'CODE';
     return $property if ref $root_value eq 'HASH';

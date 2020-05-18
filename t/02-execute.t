@@ -83,7 +83,7 @@ my @messages = (
 subtest 'publish' => sub {
   $t->post_ok('/graphql', json => {
     query => <<'EOF',
-mutation m($messages: [PubSubMessageInput!]!) {
+mutation m($messages: [MessageInput!]!) {
   publish(input: $messages)
 }
 EOF

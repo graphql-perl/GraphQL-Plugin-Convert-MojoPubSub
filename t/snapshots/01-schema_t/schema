@@ -1,18 +1,18 @@
-'type Mutation {
-  publish(input: [PubSubMessageInput!]!): DateTime!
-}
-
-type PubSubMessage {
+'type Message {
   channel: String!
   dateTime: DateTime!
   message: String!
   username: String!
 }
 
-input PubSubMessageInput {
+input MessageInput {
   channel: String!
   message: String!
   username: String!
+}
+
+type Mutation {
+  publish(input: [MessageInput!]!): DateTime!
 }
 
 type Query {
@@ -20,6 +20,6 @@ type Query {
 }
 
 type Subscription {
-  subscribe(channels: [String!]): PubSubMessage!
+  subscribe(channels: [String!]): Message!
 }
 '

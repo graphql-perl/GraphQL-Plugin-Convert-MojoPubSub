@@ -60,13 +60,13 @@ The schema will look like:
 
     scalar DateTime
 
-    input PubSubMessageInput {
+    input MessageInput {
       channel: String!
       username: String!
       message: String!
     }
 
-    type PubSubMessage {
+    type Message {
       channel: String!
       username: String!
       message: String!
@@ -78,11 +78,11 @@ The schema will look like:
     }
 
     type Mutation {
-      publish(input: [PubSubMessageInput!]!): DateTime!
+      publish(input: [MessageInput!]!): DateTime!
     }
 
     type Subscription {
-      subscribe(channels: [String!]): PubSubMessage!
+      subscribe(channels: [String!]): Message!
     }
 
 The `subscribe` field takes a list of channels to subscribe to. If the

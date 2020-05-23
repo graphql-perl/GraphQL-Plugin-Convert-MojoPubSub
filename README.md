@@ -20,7 +20,7 @@ GraphQL::Plugin::Convert::MojoPubSub - convert a Mojo PubSub server to GraphQL s
         username => $String->non_null,
         message => $String->non_null,
       },
-      $pg->pubsub,
+      $pg,
     );
     print $converted->{schema}->to_doc;
 

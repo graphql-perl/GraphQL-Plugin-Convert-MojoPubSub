@@ -2,6 +2,7 @@ package GraphQL::Plugin::Convert::MojoPubSub;
 use strict;
 use warnings;
 use GraphQL::Schema;
+use GraphQL::Plugin::Type::DateTime;
 use GraphQL::Debug qw(_debug);
 use DateTime;
 use GraphQL::Type::Scalar qw($Boolean $String);
